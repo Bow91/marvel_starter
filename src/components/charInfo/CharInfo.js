@@ -82,6 +82,7 @@ const View = ({char}) => {
     const {name, description, thumbnail, homepage, wiki, comics} = char,
           descriptionChar = (!description) ? 'The description of this character was not found' : description,
           imgStyle = thumbnail.includes('image_not_available') ? "fill" : "cover",
+          // eslint-disable-next-line array-callback-return
           elements = comics.map((item, id) => {
                 if (id < 10) {
                     return(
