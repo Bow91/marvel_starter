@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Spinner from '../spiner/Spinner';
 
@@ -8,28 +8,20 @@ import './charList.scss';
 const CharList = (props) => {
 
     const [chars, setChars] = useState([]),
-          [loading, setLoading] = useState(true),
-          [error, setError] = useState(false),
           [loadingNewItem, setLoadingNewItem] = useState(false),
           [offset, setOffset] = useState(210),
           [charEnded, setCharEnded] = useState(false);
 
-    const marvelService = new MarvelService();
+    const {loading, error, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
-        onRequest();
+        onRequest(offset, true);
     }, [])
 
-    const onRequest = (offset) => {
-        onListCharsLoading();
-        marvelService
-            .getAllCharacters(offset)
+    const onRequest = (offset, initial) => {
+        initial ? setLoadingNewItem(false) : setLoadingNewItem(true);
+        getAllCharacters(offset)
             .then(onLoadChars)
-            .catch(onError)
-    }
-
-    const onListCharsLoading = () => {
-        setLoadingNewItem(true);
     }
 
     const onLoadChars = (newChars) => {
@@ -39,7 +31,6 @@ const CharList = (props) => {
         }
 
         setChars(chars => [...chars, ...newChars]);
-        setLoading(false);
         setLoadingNewItem(false);
         setOffset(offset => offset + 9);
         setCharEnded(charEnded => ended)
@@ -47,11 +38,6 @@ const CharList = (props) => {
 
     }
 
-    const onError = () => {
-        setError(true);
-        setLoading(false)
-    }
-    
     const ref = useRef([]);
 
     const onCharSelect = (index) => {
@@ -93,15 +79,14 @@ const CharList = (props) => {
         )
     }
 
-    const   loaded = loading ? <Spinner /> : null,
+    const   loaded = loading && !loadingNewItem? <Spinner /> : null,
             errorMessage = error ? <ErrorMessage /> : null,
-            charsLoad = !(loading || error) ? ItemChar(chars) : null,
             charEndedStyle = charEnded ? 'none' : 'block';
     return (
         <div className="char__list">
             {loaded}
             {errorMessage}
-            {charsLoad}
+            {ItemChar(chars)}
             <button className="button button__main button__long"
                     disabled={loadingNewItem}
                     style={{'display': charEndedStyle}}
