@@ -10,6 +10,14 @@
     border: none;
     background-color: transparent;
     cursor: pointer;
+    &__prev {
+        width: 170px;
+        margin: 0 40px 0 auto;
+    }
+    &__next {
+        width: 170px;
+        margin: 0 auto 0 40px;
+    }
     &__long {
         display: block;
         width: 170px;
